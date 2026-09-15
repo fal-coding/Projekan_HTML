@@ -1,0 +1,1775 @@
+/* ---------- 1. DESIGN TOKEN ---------- */
+/* ALUR: DESIGN TOKEN light — semua warna, font, radius, bayangan didefinisikan sebagai variabel CSS;*/
+:root {
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
+
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-2: #f0f1f4;
+  --text: #14161a;
+  --text-soft: #5b6270;
+  --text-mute: #8a909c;
+  --line: #e3e5ea;
+  --line-strong: #cfd3da;
+
+  --brand: #c8102e;
+  --brand-dark: #a00c24;
+  --brand-soft: #fdeaec;
+  --accent: #0b6b5f;
+  --accent-soft: #e4f2f0;
+  --gold: #d99100;
+  --info: #1268b3;
+
+  --chart-1: #c8102e;
+  --chart-2: #e0533d;
+  --chart-3: #d99100;
+  --chart-4: #0b6b5f;
+  --chart-5: #1268b3;
+  --chart-6: #6b4fb3;
+
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 1px 2px rgba(16, 20, 28, .06), 0 1px 3px rgba(16, 20, 28, .05);
+  --shadow: 0 2px 6px rgba(16, 20, 28, .07), 0 8px 24px rgba(16, 20, 28, .06);
+  --shadow-lg: 0 10px 40px rgba(16, 20, 28, .16);
+
+  --header-h: 62px;
+  --nav-h: 44px;
+  --container: 1220px;
+  --gap: 18px;
+
+  --sk-base: #e7e9ee;
+  --sk-shine: #f3f4f7;
+}
+
+/* ALUR: MODE GELAP — menimpa nilai variabel yang sama dengan warna gelap; seluruh komponen otomatis ikut berubah tanpa aturan tambahan. */
+html[data-theme="dark"] {
+  --bg: #0e1116;
+  --surface: #161b22;
+  --surface-2: #1d232c;
+  --text: #e9ecf1;
+  --text-soft: #a7afbd;
+  --text-mute: #7d8797;
+  --line: #262d38;
+  --line-strong: #38414f;
+
+  --brand: #ff4d5f;
+  --brand-dark: #ff7280;
+  --brand-soft: #31161b;
+  --accent: #35c3ad;
+  --accent-soft: #102825;
+  --gold: #f0b429;
+  --info: #58a6ff;
+
+  --chart-1: #ff4d5f;
+  --chart-2: #ff8a5c;
+  --chart-3: #f0b429;
+  --chart-4: #35c3ad;
+  --chart-5: #58a6ff;
+  --chart-6: #a78bfa;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow: 0 2px 6px rgba(0, 0, 0, .35), 0 10px 30px rgba(0, 0, 0, .28);
+  --shadow-lg: 0 14px 44px rgba(0, 0, 0, .55);
+
+  --sk-base: #222933;
+  --sk-shine: #2c343f;
+}
+
+/* ---------- 2. RESET & BASE ---------- */
+*,
+*::before,
+/* Reset dasar: lebar elemen dihitung termasuk padding & border (box-sizing), margin default di-nol-. */
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+/* Pengaturan dasar dokumen: teks tidak di-zoom-aneh di HP, gulir jangkar halus, dan diberi ruang atas agar konten tidak tertutup header sticky. */
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + var(--nav-h) + 12px);
+}
+
+/* ALUR: badan halaman: latar & teks mengambil variabel tema; transisi 0,25s membuat pergantian terang↔gelap terlihat halus. */
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .25s ease, color .25s ease;
+}
+
+/* Media tidak pernah melebihi lebar kontainer (cegah mengguyur layout di HP). */
+img, svg, video { display: block; max-width: 100%; }
+/* Formulir mewarisi font halaman (browser default-nya beda sendiri). */
+button, input, select, textarea { font: inherit; color: inherit; }
+/* Tautan tidak berwarna biru/garis-bawah bawaan; warna mengikuti teks, gaya diatur per komponen. */
+a { color: inherit; text-decoration: none; }
+/* Daftar tanpa bullet & indentasi bawaan (bullet dibuat manual bila diperlukan). */
+ul { padding: 0; list-style: none; }
+/* Judul rapat ke baris 1,25 dan tebal. */
+h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
+/* Gaya potongan kode inline (latar abu, font monospace). */
+code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: .86em;
+  background: var(--surface-2);
+  padding: .1em .35em;
+  border-radius: 4px;
+}
+
+/* ALUR: pembungkus lebar maksimum 1220px yang otomatis di tengah — dipakai header, main, footer. */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 18px;
+}
+
+/* Sembunyikan elemen secara visual TAPI tetap ada untuk pembaca layar (label aksesibilitas). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Link 'Lewati ke konten' — disembunyikan di atas layar sampai menerima fokus keyboard. */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 12px;
+  z-index: 200;
+  padding: 10px 16px;
+  background: var(--brand);
+  color: #fff;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  transition: top .2s ease;
+}
+/* Saat di-Tab, tautan meluncur turun ke posisi terlihat. */
+.skip-link:focus { top: 0; }
+
+/* Atribut hidden harus selalu menang atas properti display komponen.
+   Tanpa aturan ini, kelas seperti .btn / .icon-btn / .to-top yang memakai
+   display: flex|grid akan mengalahkan [hidden] bawaan browser.      */
+[hidden] { display: none !important; }
+
+/* Garis fokus biru untuk navigasi keyboard (aksesibilitas). */
+:focus-visible {
+  outline: 3px solid var(--info);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ALUR: IKON via CSS MASK — bentuk diambil dari file SVG, warna mengikuti currentColor (otomatis ikut tema & hover). */
+.ico {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  display: inline-block;
+  /* ikon dirender melalui CSS mask: bentuk dari berkas SVG, warna ikut currentColor */
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+/* Ukuran ikon kecil. */
+.ico-sm { width: 16px; height: 16px; }
+/* Ukuran ikon besar. */
+.ico-lg { width: 46px; height: 46px; }
+
+/* peta ikon: bentuk diambil dari assets/ikon/<nama>.svg */
+.ikon-back { -webkit-mask-image: url(../assets/ikon/back.svg); mask-image: url(../assets/ikon/back.svg); }
+.ikon-bookmark { -webkit-mask-image: url(../assets/ikon/bookmark.svg); mask-image: url(../assets/ikon/bookmark.svg); }
+.ikon-check { -webkit-mask-image: url(../assets/ikon/check.svg); mask-image: url(../assets/ikon/check.svg); }
+.ikon-clock { -webkit-mask-image: url(../assets/ikon/clock.svg); mask-image: url(../assets/ikon/clock.svg); }
+.ikon-close { -webkit-mask-image: url(../assets/ikon/close.svg); mask-image: url(../assets/ikon/close.svg); }
+.ikon-eye { -webkit-mask-image: url(../assets/ikon/eye.svg); mask-image: url(../assets/ikon/eye.svg); }
+.ikon-fire { -webkit-mask-image: url(../assets/ikon/fire.svg); mask-image: url(../assets/ikon/fire.svg); }
+.ikon-link { -webkit-mask-image: url(../assets/ikon/link.svg); mask-image: url(../assets/ikon/link.svg); }
+.ikon-logout { -webkit-mask-image: url(../assets/ikon/logout.svg); mask-image: url(../assets/ikon/logout.svg); }
+.ikon-moon { -webkit-mask-image: url(../assets/ikon/moon.svg); mask-image: url(../assets/ikon/moon.svg); }
+.ikon-search { -webkit-mask-image: url(../assets/ikon/search.svg); mask-image: url(../assets/ikon/search.svg); }
+.ikon-share { -webkit-mask-image: url(../assets/ikon/share.svg); mask-image: url(../assets/ikon/share.svg); }
+.ikon-sun { -webkit-mask-image: url(../assets/ikon/sun.svg); mask-image: url(../assets/ikon/sun.svg); }
+.ikon-trash { -webkit-mask-image: url(../assets/ikon/trash.svg); mask-image: url(../assets/ikon/trash.svg); }
+.ikon-user { -webkit-mask-image: url(../assets/ikon/user.svg); mask-image: url(../assets/ikon/user.svg); }
+
+/* ---------- 3. KOMPONEN UMUM ---------- */
+/* ALUR: gaya dasar TOMBOL: flex rata tengah, sudut membulat, beranimasi naik sedikit saat hover. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: .93rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+/* Efek hover: tombol terangkat 1px. */
+.btn:hover { transform: translateY(-1px); }
+/* Saat ditekan: kembali ke posisi semula. */
+.btn:active { transform: translateY(0); }
+/* Tombol utama warna brand merah. */
+.btn-primary { background: var(--brand); color: #fff; }
+/* Hover tombol utama: merah lebih gelap. */
+.btn-primary:hover { background: var(--brand-dark); }
+/* Di mode gelap teks tombol merah dibuat gelit agar kontras. */
+html[data-theme="dark"] .btn-primary { color: #16110f; }
+/* Tombol sekunder: transparan dengan garis tepi. */
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--text-soft);
+}
+/* Hover ghost: garis & teks menonjol. */
+.btn-ghost:hover { color: var(--text); border-color: var(--text-mute); }
+/* Varian tombol kecil. */
+.btn-sm { padding: 6px 12px; font-size: .82rem; }
+/* Tombol selebar kontainer (dipakai di modal login). */
+.btn-block { width: 100%; margin-top: 10px; }
+
+/* Tombol ikon kotak 40px tanpa teks (kaca pembesar, tema, bookmark, dll). */
+.icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background-color .18s ease, color .18s ease;
+}
+/* Hover tombol ikon: latar abu lembut. */
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+
+/* Lencana bulat kecil di sudut tombol (jumlah bookmark) — posisinya absolut terhadap.icon-btn. */
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* Deretan chip yang membungkus rapi saat sempit. */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+/* ALUR: CHIP = tombol pil kecil (filter kategori, mode muat, saran pencarian). */
+.chip {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .16s ease;
+}
+/* Hover chip: garis & teks jadi merah brand. */
+.chip:hover { border-color: var(--brand); color: var(--brand); }
+/* Chip terpilih: terisi penuh warna brand. */
+.chip.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+/* Pil tagar kecil di akhir halaman detail. */
+.tag-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: .74rem;
+  font-weight: 600;
+}
+
+/* ---------- 4. HEADER / NAV / SEARCH ---------- */
+/* ALUR: HEADER sticky — menempel di atas viewport saat halaman digulir; z-index tinggi agar di atas konten. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Baris atas header: flex rata tengah dengan tinggi minimum 62px. */
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: var(--header-h);
+}
+
+/* Logo & teks nama portal berdampingan. */
+.brand { display: inline-flex; align-items: center; gap: 10px; flex: none; }
+/* Kotak merah pembungkus logo. */
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+/* Nama + tagline tersusun menumpuk. */
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+/* Nama portal memakai font serif (display) dan huruf besar. */
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+/* Tagline kecil huruf kapital berjarak. */
+.brand-tagline {
+  font-size: .68rem;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+/* Tanggal didorong ke sisi kanan (margin-left:auto) di baris header. */
+.header-date {
+  margin-left: auto;
+  font-size: .8rem;
+  color: var(--text-mute);
+  white-space: nowrap;
+}
+
+/* Kontainer tombol-tombol kanan. */
+.header-actions { display: flex; align-items: center; gap: 6px; }
+/* Tombol akun lebih padat. */
+.btn-user { gap: 6px; padding: 8px 12px; }
+
+/* tombol keluar: hanya muncul saat ada akun yang masuk */
+/* Tombol keluar berwarna abu netral… */
+.btn-logout {
+  border-color: var(--line);
+  color: var(--text-mute);
+}
+/* …berubah merah saat hover. */
+.btn-logout:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+/* Burger disembunyikan di desktop (dimunculkan lagi pada @media 820px). */
+.nav-toggle { display: none; }
+
+.burger,
+.burger::before,
+/* Tiga garis tombol menu: span tengah + dua pseudo-element absolut di atas-bawah. */
+.burger::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform .22s ease, opacity .22s ease;
+}
+.burger { position: relative; }
+.burger::before,
+/* Tiga garis tombol menu: span tengah + dua pseudo-element absolut di atas-bawah. */
+.burger::after { content: ""; position: absolute; left: 0; }
+.burger::before { top: -6px; }
+/* Tiga garis tombol menu: span tengah + dua pseudo-element absolut di atas-bawah. */
+.burger::after { top: 6px; }
+/* Saat menu mobile terbuka: garis tengah menghilang… */
+.nav-open .burger { background: transparent; }
+/* …garis atas berputar 45° jadi silang. */
+.nav-open .burger::before { transform: translateY(6px) rotate(45deg); }
+/* …garis bawah berputar -45° jadi silang. */
+.nav-open .burger::after { transform: translateY(-6px) rotate(-45deg); }
+
+/* tema: tampilkan ikon sesuai mode */
+.ico-moon { display: none; }
+html[data-theme="dark"] .ico-sun { display: none; }
+html[data-theme="dark"] .ico-moon { display: block; }
+
+/* Bilah kategori di bawah header, terpisah garis tipis. */
+.site-nav {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+/* Daftar tautan mendatar dengan gulir horizontal bila lebih lebar dari layar. */
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--nav-h);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+/* ALUR: tautan kategori: teks abu, tidak membungkus (nowrap), beranimasi saat hover. */
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
+  color: var(--text-soft);
+  font-size: .88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color .16s ease;
+}
+/* Garis bawah merah dibuat sebagai pseudo-element… */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .2s ease;
+}
+/* Hover tautan: teks menegel. */
+.nav-link:hover { color: var(--text); }
+.nav-link:hover::after,
+/* …lebarnya dikecilkan ke 0 (scaleX) lalu dimunculkan saat hover / tautan aktif. */
+.nav-link.is-active::after { transform: scaleX(1); }
+/* Link halaman aktif berwarna merah brand. */
+.nav-link.is-active { color: var(--brand); }
+
+/* panel pencarian */
+/* Panel pencarian muncul dengan animasi meluncur turun (slideDown). */
+.search-panel {
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+  padding-block: 14px;
+  animation: slideDown .22s ease;
+}
+/* Form cari: kolom input fleksibel melebar, tombol di kanan. */
+.search-form { display: flex; gap: 10px; }
+/* Ketik pencarian: sudut membulat, latar putih, tepi abu. */
+.search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+/* Warna teks contoh abu pucat. */
+.search-input::placeholder { color: var(--text-mute); }
+/* Saat tekan: tepi jadi merah dan outline biru default dimatikan. */
+.search-input:focus { border-color: var(--brand); outline: none; }
+/* Teks bantuan kecil. */
+.search-hint { margin-top: 8px; font-size: .78rem; color: var(--text-mute); }
+/* Deret chip kata populer yang membungkus. */
+.search-suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+/* ---------- 5. HALAMAN, HERO, GRID ---------- */
+/* Batas vertikal area konten tiap halaman. */
+.page { padding-block: 26px 48px; }
+/* Jarak antar blok besar di beranda. */
+.block { margin-top: 34px; }
+/* Kepala blok: judul kiri, tautan 'Lihat semua' kanan, garis bawah. */
+.block-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--line);
+}
+/* Judul blok memakai font serif dengan titik pulse di sampingnya. */
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+}
+/* Subjudul/penjelasan memenuhi satu baris penuh. */
+.block-sub { width: 100%; font-size: .85rem; color: var(--text-mute); }
+/* Link 'Lihat papan peringkat lengkap' warna merah. */
+.link-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand);
+  font-size: .85rem;
+  font-weight: 600;
+}
+/* Hover: bergaris bawah. */
+.link-more:hover { text-decoration: underline; }
+
+/* Titik merah yang berdenyut (animasi pulse) sebagai penanda 'Sedang Trending'. */
+.pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 0 var(--brand);
+  animation: pulse 1.8s infinite;
+}
+
+/* Jarak kepala halaman kategori/pencarian. */
+.page-head { margin-bottom: 20px; }
+/* Judul besar halaman; clamp() membuat ukurannya lentur antara layar kecil-besar. */
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+}
+/* Deskripsi halaman, dibatasi 76 karakter per baris agar nyaman dibaca. */
+.page-desc { margin-top: 6px; color: var(--text-soft); font-size: .94rem; max-width: 76ch; }
+/* Breadcrumb kecil abu. */
+.crumbs { display: flex; flex-wrap: wrap; gap: 6px; font-size: .82rem; color: var(--text-mute); margin-bottom: 8px; }
+/* Hover breadcrumb jadi merah. */
+.crumbs a:hover { color: var(--brand); }
+
+/* HERO */
+/* ALUR: HERO beranda pakai grid 2 kolom: kartu besar 1,7fr dan kolom kartu samping 1fr. */
+.hero {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: var(--gap);
+}
+/* Kartu hero besar tinggi 380px; isinya gambar absolut dengan teks di atas. */
+.hero-main {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  min-height: 380px;
+  display: flex;
+  align-items: flex-end;
+}
+/* Gambar hero memenuhi seluruh kartu (posisi absolut, keempat sisi 0). */
+.hero-main .thumb { position: absolute; inset: 0; }
+/* Gambar menutup penuh area tanpa gepeng. */
+.hero-main .thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* Gradient gelap dari bawah ke atas agar teks putih di atas gambar tetap terbaca. */
+.hero-main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(6, 8, 12, .92) 4%, rgba(6, 8, 12, .45) 42%, rgba(6, 8, 12, .08) 100%);
+}
+/* Teks hero ditaruh di atas gambar (z-index di atas gradient), posisi bawah. */
+.hero-body {
+  position: relative;
+  z-index: 2;
+  padding: 22px;
+  color: #fff;
+}
+/* Pil kategori merah di atas judul hero. */
+.hero-body .cat-label {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--brand);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+/* Judul hero besar serif. */
+.hero-body h2 {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.6vw, 2rem);
+  line-height: 1.2;
+}
+/* Ringkasan hero putih transparan. */
+.hero-body p {
+  margin-top: 10px;
+  max-width: 62ch;
+  color: rgba(255, 255, 255, .82);
+  font-size: .94rem;
+}
+/* Baris sumber • waktu • pembaca di hero. */
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 12px;
+  font-size: .8rem;
+  color: rgba(255, 255, 255, .7);
+}
+/* Kolom 3 kartu samping tersusun menumpuk. */
+.hero-side { display: flex; flex-direction: column; gap: var(--gap); }
+/* Kartu samping: gambar kiri kecil + judul kanan, mengangkat saat hover. */
+.side-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+/* Hover kartu samping: naik & bayangan membesar. */
+.side-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+/* Thumbnail kiri 104x78 sudut membulat. */
+.side-card .thumb { flex: none; width: 104px; height: 78px; border-radius: var(--radius-sm); overflow: hidden; }
+/* Gambar thumbnail dipotong rapi (cover). */
+.side-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* Area teks kartu samping; min-width 0 agar teks panjang tidak mendorong layout. */
+.side-body { min-width: 0; }
+/* Judul kartu samping dibatasi maksimal 3 baris lalu dipotong. */
+.side-body h3 {
+  font-size: .95rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Judul memerah saat kartu di-hover. */
+.side-body:hover h3 { color: var(--brand); }
+/* Kategori • waktu berukuran kecil. */
+.side-meta { margin-top: 6px; font-size: .76rem; color: var(--text-mute); }
+
+/* GRID KARTU BERITA */
+/* ALUR: GRID KARTU — auto-fill kolom minimum 280px: otomatis 1/2/3/4 kolom sesuai lebar layar. */
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--gap);
+}
+/* ALUR: KARTU BERITA: kolom flex, tepi abu, sudut membulat, bayangan tipis. */
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+/* Hover kartu: terangkat, bayangan membesar, tepi menegel. */
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--line-strong); }
+/* Area gambar 16:9; rasio dijaga agar layout tidak bergeser sebelum gambar termuat. */
+.card-thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--surface-2); }
+/* Gambar pen kartu; saat hover kartu dia membesar halus (zoom). */
+.card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+/* Zoom gambar 1,05x saat hover. */
+.card:hover .card-thumb img { transform: scale(1.05); }
+/* Pil label kategori di pojok kiri atas gambar. */
+.card-cat {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+/* Isi kartu sebagai kolom flex yang memenuhi sisa tinggi (judul, ringkasan, meta). */
+.card-body { display: flex; flex-direction: column; flex: 1; padding: 14px; }
+/* Judul kartu serif, maksimal 3 baris. */
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Judul memerah saat hover. */
+.card:hover .card-title { color: var(--brand); }
+/* Ringkasan kartu abu, maksimal 3 baris. */
+.card-excerpt {
+  margin-top: 8px;
+  color: var(--text-soft);
+  font-size: .88rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Baris bawah: meta kiri, tombol aksi kanan; margin-top:auto menahannya di dasar kartu. */
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+/* Teks meta kecil abu. */
+.card-meta { font-size: .76rem; color: var(--text-mute); line-height: 1.4; }
+/* Nama sumber sedikit menonjol. */
+.card-meta strong { color: var(--text-soft); font-weight: 600; }
+/* Titik pematas '•' antar item meta. */
+.meta-dot { margin-inline: 4px; opacity: .6; }
+/* Dua tombol ikon (simpan & bagikan) di kartu. */
+.card-actions { display: flex; gap: 2px; }
+/* Tombol ikon di kartu dibuat lebih kecil (34px). */
+.card .icon-btn { width: 34px; height: 34px; }
+/* Ikon bookmark berwarna merah saat berita tersimpan. */
+.icon-btn.is-saved { color: var(--brand); }
+/* Cadangan: isi path SVG juga diwarnai. */
+.icon-btn.is-saved svg path { fill: var(--brand); }
+/* Nomor peringkat besar putih dengan bayangan di pojok kartu trending. */
+.rank-no {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+}
+
+/* ---------- 6. SKELETON & SPINNER ---------- */
+/* ALUR: SKELETON pemuatan: blok abu dengan kilau berjalan (::after + animasi shimmer). */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--sk-base);
+  border-radius: var(--radius-sm);
+}
+/* Lapisan kilau gradient yang digeser kiri→kanan terus-menerus. */
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--sk-shine), transparent);
+  animation: shimmer 1.35s infinite;
+}
+/* Placeholder gambar skeleton mengikuti rasio 16:9. */
+.sk-thumb { aspect-ratio: 16 / 9; border-radius: 0; }
+/* Garis teks placeholder tinggi 12px. */
+.sk-line { height: 12px; margin-top: 10px; }
+/* Lebar garis placeholder 90%… */
+.sk-line.w-90 { width: 90%; }
+/* …70%… */
+.sk-line.w-70 { width: 70%; }
+/* …dan 50%. */
+.sk-line.w-50 { width: 50%; }
+/* Garis placeholder lebih tinggi (untuk judul). */
+.sk-line.h-lg { height: 18px; }
+/* Padding area teks skeleton sama dengan kartu asli. */
+.sk-body { padding: 14px; }
+/* Placeholder kartu samping hero. */
+.sk-side { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+/* Kotak gambar placeholder kartu samping. */
+.sk-side-thumb { width: 104px; height: 78px; flex: none; }
+/* Garis-garis teks placeholder kartu samping. */
+.sk-side-lines { flex: 1; }
+/* Batang placeholder grafik. */
+.sk-chart { height: 15px; margin-top: 12px; border-radius: 4px; }
+
+/* ALUR: SPINNER: lingkaran dengan satu sisi merah yang berputar (animasi spin). */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--line-strong);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin .75s linear infinite;
+}
+/* Baris status feed: rata tengah, tinggi minimum agar layout tidak meloncat. */
+.feed-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  margin-top: 18px;
+  color: var(--text-mute);
+  font-size: .88rem;
+}
+/* Saat tidak ada pesan: elemen tidak memakan tempat. */
+.feed-status:empty { display: none; }
+/* Penanda 1px di ujung feed — target pantauan infinite gulir. */
+.sentinel { height: 1px; }
+
+/* ---------- ALAT FEED: PEMILIH MODE + PAGINATION ---------- */
+/* Baris alat feed: pemilih mode kiri, pagination kanan. */
+.feed-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+/* Bila belum ada alat: tidak memakan tempat. */
+.feed-tools:empty { display: none; }
+/* Grup dua tombol pilihan cara muat. */
+.feed-mode {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* Label 'Cara muat:' kecil. */
+.feed-mode-label {
+  font-size: .8rem;
+  color: var(--text-mute);
+  margin-right: 2px;
+}
+
+/* Deretan tombol halaman, otomatis di tengah. */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-inline: auto;
+}
+/* Tombol kotak nomor halaman. */
+.page-btn {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .14s ease, background-color .16s ease, color .16s ease, border-color .16s ease;
+}
+/* Hover tombol halaman aktif: naik & merah; yang disabled tidak. */
+.page-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+/* Tombol halaman aktif terisi merah. */
+.page-btn.is-active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+/* Tombol ‹/› di ujung rentang dibuat redup & tidak bisa tekan. */
+.page-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* ---------- 7. CHART TRENDING ---------- */
+/* Dua grafik berdampingan (grid 1,45fr: 1fr); jadi menumpuk di layar sempit. */
+.charts-wrap {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: var(--gap);
+}
+/* Kartu putih pembungkus grafik. */
+.panel {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+/* Judul panel grafik. */
+.panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+/* Subjudul penjelasan grafik. */
+.panel-sub { margin-top: 2px; font-size: .78rem; color: var(--text-mute); }
+/* Jarak area grafik dari judul. */
+.chart-box { margin-top: 14px; }
+/* SVG grafik mengikuti lebar kontainer, tinggi menyesuaikan proporsi. */
+.chart-box svg { width: 100%; height: auto; overflow: visible; }
+/* Keterangan kaki grafik. */
+.chart-caption { margin-top: 10px; font-size: .74rem; color: var(--text-mute); }
+
+/* Batang grafik bisa tekan (kursor pointer) dengan transisi opasitas. */
+.chart-svg .bar { transition: opacity .18s ease; cursor: pointer; }
+/* Hover batang: sedikit transparan. */
+.chart-svg .bar:hover { opacity: .82; }
+/* Garis sumbu vertikal pemisah label & batang. */
+.chart-svg .axis-line { stroke: var(--line-strong); stroke-width: 1; }
+/* Garis bantu putus-putus. */
+.chart-svg .grid-line { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 4; }
+/* Teks judul berita di kiri batang. */
+.chart-svg .bar-label { fill: var(--text-soft); font-size: 11px; }
+/* Angka pembaca di kanan batang, tebal. */
+.chart-svg .bar-value { fill: var(--text); font-size: 11px; font-weight: 700; }
+/* Label sumbu kecil. */
+.chart-svg .axis-label { fill: var(--text-mute); font-size: 10px; }
+/* Potongan cincin bisa tekan menuju kategori. */
+.chart-svg .slice { transition: opacity .18s ease; cursor: pointer; }
+/* Hover potongan cincin: redup halus. */
+.chart-svg .slice:hover { opacity: .85; }
+/* Teks label potongan. */
+.chart-svg .slice-label { fill: var(--text); font-size: 11px; font-weight: 600; }
+
+/* Legenda warna kategori di bawah cincin, membungkus. */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 14px; }
+/* Butir legenda: titik warna + teks. */
+.legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--text-soft); }
+/* Kotak warna kecil sesuai warna potongan. */
+.legend-dot { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+
+/* ALUR: daftar 10 peringkat tersusun menumpuk dengan celah. */
+.rank-list { margin-top: 22px; display: grid; gap: 10px; }
+/* Satu baris peringatan: nomor kiri, info tengah, angka pembaca kanan. */
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color .16s ease, transform .16s ease;
+}
+/* Hover baris: tepi merah & bergeser kanan sedikit. */
+.rank-item:hover { border-color: var(--brand); transform: translateX(3px); }
+/* Kotak nomor peringkat 34px. */
+.rank-index {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--surface-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+/* Juara 1: medali emas. */
+.rank-item:nth-child(1) .rank-index { background: var(--gold); color: #fff; }
+/* Juara 2: medali perak. */
+.rank-item:nth-child(2) .rank-index { background: var(--line-strong); }
+/* Juara 3: medali perunggu (latar merah pucat). */
+.rank-item:nth-child(3) .rank-index { background: var(--brand-soft); color: var(--brand); }
+/* Judul & sub-info peringkat; min-width 0 agar teks panjang terpotong rapi. */
+.rank-info { flex: 1; min-width: 0; }
+/* Judul berita pada baris peringatan. */
+.rank-title { font-weight: 600; font-size: .95rem; }
+/* Judul memerah saat hover. */
+.rank-item:hover .rank-title { color: var(--brand); }
+/* Sub-info: kategori • sumber • waktu. */
+.rank-sub { font-size: .78rem; color: var(--text-mute); margin-top: 2px; }
+/* Angka pembaca rata kanan. */
+.rank-views { text-align: right; flex: none; }
+/* Angka besar merah. */
+.rank-views b { display: block; font-size: 1rem; color: var(--brand); }
+/* Label 'pembaca' kecil abu. */
+.rank-views span { font-size: .72rem; color: var(--text-mute); }
+
+/* ---------- 8. DETAIL BERITA ---------- */
+/* Halaman detail dibatasi lebar 780px dan di tengah — nyaman membaca. */
+.article-detail { max-width: 780px; margin-inline: auto; }
+/* Link 'Kembali' kecil abu di atas judul. */
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: var(--text-mute);
+  font-size: .86rem;
+}
+/* Hover tautan kembali: merah. */
+.detail-back:hover { color: var(--brand); }
+/* Pil kategori merah-pucat di atas judul detail. */
+.detail-cat {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: .76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+/* Judul berita besar serif. */
+.detail-title {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  line-height: 1.18;
+}
+/* Ringkasan utama (lead) berukuran lebih besar. */
+.detail-lead {
+  margin-top: 12px;
+  font-size: 1.08rem;
+  color: var(--text-soft);
+}
+/* Baris meta detail dibatasi garis atas-bawah. */
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 16px;
+  padding-block: 14px;
+  border-block: 1px solid var(--line);
+  font-size: .84rem;
+  color: var(--text-mute);
+}
+/* Nama penulis ditebalkan. */
+.detail-meta b { color: var(--text); }
+/* Gambar besar detail dengan sudut membulat. */
+.detail-hero {
+  margin-top: 18px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+/* Gambar detail rasio 16:9. */
+.detail-hero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+/* Keterangan gambar kecil. */
+.detail-caption {
+  padding: 8px 2px 0;
+  font-size: .78rem;
+  color: var(--text-mute);
+}
+/* ALUR: isi berita: huruf sedikit besar, jarak antar baris longgar (1,85) agar nyaman dibaca. */
+.detail-body { margin-top: 20px; font-size: 1.03rem; line-height: 1.85; }
+/* Jarak antar paragraf. */
+.detail-body p { margin-bottom: 16px; }
+/* Subjudul di tengah isi (berasal dari penanda '##' di data). */
+.detail-body h3 { margin-block: 22px 10px; font-family: var(--font-display); font-size: 1.25rem; }
+/* Kutipan: garis merah kiri + font serif miring (penanda '> ' di data). */
+.detail-body blockquote {
+  margin-block: 20px;
+  padding: 4px 0 4px 18px;
+  border-left: 4px solid var(--brand);
+  color: var(--text-soft);
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-style: italic;
+}
+/* Deret pil tagar. */
+.detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+/* Kartu putih pembungkus tombol simpan, bagikan, dan tombol share layanan. */
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+/* Deretan tombol berbagi memenuhi lebar, membungkus di layar sempit. */
+.share-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; width: 100%; }
+/* Tombol pil berbagi (WhatsApp/X/dst). */
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .14s ease, border-color .16s ease;
+}
+/* Hover tombol share: terangkat & tepi menegel. */
+.share-btn:hover { transform: translateY(-2px); border-color: var(--text-mute); }
+/* Ikon di tombol share 17px. */
+.share-btn svg { width: 17px; height: 17px; }
+/* Penanda 'ikon + teks' (mata/jam) yang selalu berdampingan rapi. */
+.stat-inline { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Judul 'Berita terkait' dengan garis bawah. */
+.related-title {
+  margin-top: 40px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+
+/* ---------- 8c. HALAMAN PROFIL PENGGUNA ---------- */
+/* Kartu profil putih besar. */
+.profile-card {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+/* Baris atas profil: avatar kiri, identitas tengah, tombol keluar kanan. */
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+/* ALUR: lingkaran avatar berisi inisial nama (gradien merah), dibuat dari fungsi initials(). */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  flex: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  box-shadow: var(--shadow-sm);
+}
+/* Blok nama, @username, email. */
+.profile-id { min-width: 0; flex: 1; }
+/* Nama pengguna serif besar. */
+.profile-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.75rem);
+  line-height: 1.2;
+  word-break: break-word;
+}
+/* Username warna merah. */
+.profile-handle {
+  margin-top: 2px;
+  color: var(--brand);
+  font-size: .92rem;
+  font-weight: 600;
+}
+/* Email abu, boleh terpotong (break-all). */
+.profile-mail {
+  margin-top: 2px;
+  color: var(--text-mute);
+  font-size: .88rem;
+  word-break: break-all;
+}
+/* Tombol keluar didorong ke kanan. */
+.profile-tools { margin-left: auto; }
+
+/* Tiga kotak statistik tersusun grid adaptif. */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+/* Kotak statistik latar abu, angka di tengah. */
+.profile-stat {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: center;
+}
+/* Label statistik kecil kapital berjarak. */
+.profile-stat dt {
+  color: var(--text-mute);
+  font-size: .76rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+/* Angka statistik besar merah serif. */
+.profile-stat dd {
+  margin-top: 4px;
+  color: var(--brand);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* Tabel detail akun di atas latar abu. */
+.profile-detail {
+  display: grid;
+  gap: 2px;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+/* Baris label–nilai dengan garis pemisah. */
+.profile-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: .9rem;
+}
+/* Baris terakhir tanpa garis bawah. */
+.profile-row:last-child { border-bottom: 0; }
+/* Label kiri abu. */
+.profile-row-label { color: var(--text-mute); flex: none; }
+/* Nilai kanan tebal, boleh terpotong panjang. */
+.profile-row-value { color: var(--text); font-weight: 600; text-align: right; word-break: break-word; }
+
+/* Kotak ajakan login di profil dibatasi lebar & ditengahkan. */
+.profile-guest { max-width: 520px; margin-inline: auto; }
+/* Jarak daftar simpanan dari kartu profil. */
+.profile-body { margin-top: 34px; }
+
+/* ---------- 8b. HALAMAN TENTANG (about.html) ---------- */
+/* Grid kartu informasi halaman Tentang (minimum 320px per kartu). */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--gap);
+  margin-top: 22px;
+}
+/* Kartu putih isi materi Tentang. */
+.about-card {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+/* Judul kartu dengan garis bawah… */
+.about-card-title {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+/* …ditambah aksen merah 46px di ujung kiri. */
+.about-card-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 46px;
+  height: 2px;
+  background: var(--brand);
+}
+/* Paragraf kartu Tentang berwarna abu. */
+.about-card p { margin-bottom: 12px; color: var(--text-soft); font-size: .94rem; }
+/* Paragraf terakhir tanpa margin bawah. */
+.about-card p:last-child { margin-bottom: 0; }
+
+/* Daftar fitur tersusun menumpuk. */
+.about-list { display: grid; gap: 9px; }
+/* Butir fitur dengan indentasi kiri… */
+.about-list li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--text-soft);
+  font-size: .92rem;
+}
+/* …dan titik merah bulat sebagai penanda (bukan bullet bawaan). */
+.about-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .58em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+/* Nama fitur ditebalkan. */
+.about-list strong { color: var(--text); }
+
+/* Daftar kategori + deskripsi. */
+.about-cat-list { display: grid; gap: 12px; }
+/* Tiap kategori dibatasi garis bawah. */
+.about-cat-list li { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+/* Baris terakhir tanpa garis. */
+.about-cat-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+/* Nama kategori berupa tautan merah tebal. */
+.about-cat-list a {
+  font-weight: 700;
+  color: var(--brand);
+  font-size: .95rem;
+}
+/* Hover tautan kategori: bergaris bawah. */
+.about-cat-list a:hover { text-decoration: underline; }
+/* Deskripsi kategori kecil abu di bawah nama. */
+.about-cat-list span {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-mute);
+  font-size: .84rem;
+}
+
+/* Kotak ajakan dengan bingkai putus-putus, isi tombol di tengah. */
+.about-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 26px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+/* ---------- 9. STATE: ERROR / KOSONG ---------- */
+/* ALUR: kotak status terpusat (404, error, kosong, tamu): lebar maksimum 620px, konten rata tengah. */
+.state-box {
+  max-width: 620px;
+  margin-inline: auto;
+  padding: 40px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+/* Angka 404 besar abu. */
+.state-code {
+  font-family: var(--font-display);
+  font-size: 3.4rem;
+  font-weight: 700;
+  color: var(--line-strong);
+}
+/* Ikon/ilustrasi status berwarna merah. */
+.state-ico { color: var(--brand); display: inline-block; }
+/* Judul pesan status. */
+.state-title { margin-top: 8px; font-size: 1.4rem; }
+/* Penjelasan status. */
+.state-text { margin-top: 8px; color: var(--text-soft); }
+/* Deretan tombol aksi di tengah. */
+.state-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+/* Tepi kotak error dibuat merah sebagai penanda. */
+.state-error { border-color: var(--brand); }
+/* Kotak detail teknis error, teks rata kiri. */
+.error-detail {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  text-align: left;
+  font-size: .82rem;
+  color: var(--text-soft);
+}
+/* Tiap butir detail. */
+.error-detail li { margin-bottom: 4px; }
+/* Penanda bullet merah manual. */
+.error-detail li::before { content: "•"; margin-right: 8px; color: var(--brand); }
+/* Ikon status kosong dibuat netral abu. */
+.state-empty .state-ico { color: var(--text-mute); }
+
+/* ---------- 10. TOAST ---------- */
+/* ALUR: TOAST menempel di pojok kanan bawah (fixed), menumpuk ke atas, lebar maksimum 360px. */
+.toast-wrap {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(92vw, 360px);
+}
+/* Satu notifikasi: kartu putih dengan garis warna di sisi kiri sesuai jenisnya. */
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: toastIn .25s ease;
+}
+/* Kelas keluar: animasi memudar/turun lalu dihapus dari DOM. */
+.toast.is-out { animation: toastOut .25s ease forwards; }
+/* Toast error: garis kiri merah. */
+.toast-error { border-left-color: var(--brand); }
+/* Toast peringatan: garis kiri emas. */
+.toast-warn { border-left-color: var(--gold); }
+/* Teks pesan toast. */
+.toast-text { font-size: .88rem; }
+/* Tombol silang penutup toast. */
+.toast-close {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: var(--text-mute);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ---------- 11. MODAL ---------- */
+.modal[hidden] { display: none; }
+/* ALUR: MODAL menutupi seluruh layar (fixed, inset 0) dengan grid untuk menengahkan kotak dialog. */
+.modal { position: fixed; inset: 0; z-index: 160; display: grid; place-items: center; padding: 18px; }
+/* Layar gelap transparan + sedikit blur di belakang modal; tekan area ini menutup modal. */
+.modal-backdrop { position: absolute; inset: 0; background: rgba(8, 10, 14, .6); backdrop-filter: blur(2px); }
+/* Kotak dialog putih, maksimal 430px, bisa digulir bila konten panjang. */
+.modal-box {
+  position: relative;
+  width: min(430px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: popIn .22s ease;
+}
+/* Tombol silang di pojok kanan atas modal. */
+.modal-close { position: absolute; top: 12px; right: 12px; }
+/* Judul modal serif. */
+.modal-title { font-family: var(--font-display); font-size: 1.35rem; }
+/* Subjudul/penjelasan modal. */
+.modal-sub { margin-top: 6px; font-size: .86rem; color: var(--text-soft); }
+/* Dua tab Masuk/Daftar berdampingan. */
+.tabs { display: flex; gap: 6px; margin-top: 18px; }
+/* Tombol tab: abu saat tidak terpilih… */
+.tab {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: .88rem;
+  cursor: pointer;
+}
+/* …merah penuh saat tab aktif. */
+.tab[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+/* Form di dalam modal login. */
+.auth-form { margin-top: 16px; }
+/* Jarak antar field form. */
+.field { margin-bottom: 12px; }
+/* Label field kecil tebal abu. */
+.field-label { display: block; margin-bottom: 5px; font-size: .82rem; font-weight: 600; color: var(--text-soft); }
+/* Input melebar penuh, latar abu lembut. */
+.field-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+/* Input fokus: tepi merah, outline default dimatikan. */
+.field-input:focus { border-color: var(--brand); outline: none; }
+/* Pesan kesalahan form berwarna merah. */
+.form-error { margin-top: 6px; color: var(--brand); font-size: .82rem; font-weight: 600; }
+
+/* ---------- 11b. MODAL KONFIRMASI ---------- */
+/* Modal konfirmasi lebih kecil & isinya rata tengah. */
+.modal-box-sm { width: min(400px, 100%); text-align: center; }
+/* Lingkaran ikon merah di atas modal konfirmasi. */
+.confirm-ico {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+/* Jarak penjelasan modal konfirmasi. */
+.modal-box-sm .modal-sub { margin-top: 8px; }
+/* Dua tombol Batal/Ya berdampingan di tengah. */
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+/* Tombol konfirmasi punya lebar minimum. */
+.confirm-actions .btn { min-width: 120px; }
+
+/* Tombol aksi berbahaya (keluar/hapus) tetap merah brand. */
+.btn-danger { background: var(--brand); color: #fff; }
+/* Hover: merah gelap. */
+.btn-danger:hover { background: var(--brand-dark); }
+/* Teks tombol bahaya di mode gelap dibuat gelit agar kontras. */
+html[data-theme="dark"] .btn-danger { color: #16110f; }
+/* Varian tombol bahaya tanpa isi (dipakai di profil). */
+.btn-danger-outline { border-color: var(--line-strong); color: var(--text-soft); }
+/* Hover-nya: merah pucat. */
+.btn-danger-outline:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+/* ---------- 12. FOOTER ---------- */
+/* FOOTER: latar putih dengan garis atas, diberi jarak dari konten. */
+.site-footer { margin-top: 40px; border-top: 1px solid var(--line); background: var(--surface); }
+/* Empat kolom footer (lebar proporsional). */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+  gap: 26px;
+  padding-block: 34px;
+}
+/* Nama portal di footer. */
+.footer-brand { margin-top: 10px; font-family: var(--font-display); font-size: 1.25rem; }
+/* Judul kolom footer kapital berjarak. */
+.footer-title { font-size: .9rem; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+/* Teks deskriptif footer kecil abu. */
+.footer-text { font-size: .86rem; color: var(--text-soft); }
+/* Jarak antar tautan footer. */
+.footer-list li { margin-bottom: 7px; }
+/* Link footer abu. */
+.footer-list a { font-size: .88rem; color: var(--text-soft); }
+/* Hover tautan footer: merah. */
+.footer-list a:hover { color: var(--brand); }
+/* Baris hak cipta terpisah garis atas. */
+.footer-bottom { border-top: 1px solid var(--line); padding-block: 14px; }
+/* Isi baris bawah tersebar rata kiri-kanan, membungkus di layar sempit. */
+.footer-bottom-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: .78rem;
+  color: var(--text-mute);
+}
+
+/* (Komponen sakelar tersedia — dipakai untuk pilihan bertipe on/off). */
+.switch { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+/* Input checkbox asli disembunyikan… */
+.switch input { position: absolute; opacity: 0; pointer-events: none; }
+/* …jalur sakelar digambar manual sebagai latar. */
+.switch-track {
+  position: relative;
+  width: 42px;
+  height: 23px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--line-strong);
+  transition: background-color .2s ease;
+}
+/* Bulat kecil di dalam jalur = knob sakelar. */
+.switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .2s ease;
+}
+/* Saat aktif: jalur memerah. */
+.switch input:checked + .switch-track { background: var(--brand); }
+/* …knob bergeser ke kanan. */
+.switch input:checked + .switch-track::after { transform: translateX(19px); }
+/* Garis fokus aksesibilitas saat sakelar di-Tab. */
+.switch input:focus-visible + .switch-track { outline: 3px solid var(--info); outline-offset: 2px; }
+/* Teks di samping sakelar. */
+.switch-label { font-size: .84rem; color: var(--text-soft); }
+
+/* ---------- 13. TOMBOL KE ATAS ---------- */
+/* ALUR: TOMBOL KE ATAS bulat fixed di pojok kanan bawah; disembunyikan oleh JS sampai gulir > 500px. */
+.to-top {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-soft);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+/* Hover tombol ke atas: ikon merah. */
+.to-top:hover { color: var(--brand); }
+.toast-wrap:not(:empty) ~ .to-top,
+/* Saat ada toast, tombol ke atas digeser naik agar tidak bertumpuk. */
+.to-top.is-shift { bottom: 90px; }
+
+/* ---------- 14. ANIMASI ---------- */
+/* ALUR ANIMASI: kilau skeleton berjalan kiri→kanan. */
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+/* ALUR ANIMASI: putaran 360° (spinner pemuatan). */
+@keyframes spin { to { transform: rotate(360deg); } }
+/* ALUR ANIMASI: denyut lingkaran merah (titik 'Sedang Trending'). */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200, 16, 46, .55); }
+  70% { box-shadow: 0 0 0 10px rgba(200, 16, 46, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, 0); }
+}
+/* ALUR ANIMASI: panel pencarian meluncur turun. */
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+/* ALUR ANIMASI: modal muncul dengan zoom halus. */
+@keyframes popIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+/* ALUR ANIMASI: toast masuk dari bawah. */
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+/* ALUR ANIMASI: toast keluar turun & memudar. */
+@keyframes toastOut { to { opacity: 0; transform: translateY(12px); } }
+/* ALUR ANIMASI: kartu berita muncul naik sedikit saat pertama dirender. */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.fade-up { animation: fadeUp .3s ease both; }
+
+/* ALUR: blok media query — aturan di dalamnya hanya berlaku pada kondisi yang disebutkan. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- 15. RESPONSIVE ---------- */
+/* ALUR RESPONSIF: berlaku di layar ≤ 1024px (tablet). Aturan di dalamnya MENIMPA gaya desktop di atas. */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-main { min-height: 300px; }
+  .hero-side { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .side-card { min-width: 300px; }
+  .charts-wrap { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ALUR RESPONSIF: berlaku di layar ≤ 820px (tablet kecil / HP lebar — menu berubah jadi tombol menu). Aturan di dalamnya MENIMPA gaya desktop di atas. */
+@media (max-width: 820px) {
+  .header-date { display: none; }
+  .nav-toggle { display: inline-flex; }
+  .site-nav { display: none; }
+  .site-nav.is-open { display: block; }
+  .nav-inner { flex-direction: column; align-items: stretch; padding-block: 8px; }
+  .nav-link { padding: 12px; border-bottom: 1px solid var(--line); }
+  .nav-link::after { display: none; }
+  .nav-link.is-active { background: var(--brand-soft); border-radius: var(--radius-sm); }
+  .auth-label { display: none; }
+  .btn-user { width: 40px; padding: 8px; }
+  .search-form { flex-wrap: wrap; }
+  .search-form .btn { flex: 1; }
+}
+
+/* ALUR RESPONSIF: berlaku di layar ≤ 640px (ponsel). Aturan di dalamnya MENIMPA gaya desktop di atas. */
+@media (max-width: 640px) {
+  .container { padding-inline: 14px; }
+  .article-grid { grid-template-columns: 1fr; }
+  .feed-tools { justify-content: center; }
+  .about-grid { grid-template-columns: 1fr; }
+  .profile-card { padding: 18px; }
+  .avatar { width: 60px; height: 60px; font-size: 1.4rem; }
+  .profile-tools { margin-left: 0; width: 100%; }
+  .confirm-actions { flex-direction: column-reverse; }
+  .confirm-actions .btn { width: 100%; }
+  .about-card { padding: 18px; }
+  .about-cta { padding: 20px 16px; }
+  .pagination { width: 100%; justify-content: center; }
+  .page-btn { min-width: 34px; height: 34px; padding: 0 8px; font-size: .82rem; }
+  .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+  .brand-tagline { display: none; }
+  .hero-body { padding: 16px; }
+  .detail-actions { padding: 14px; }
+  .state-box { padding: 28px 18px; }
+  .rank-item { flex-wrap: wrap; }
+  .rank-views { text-align: left; }
+}
+
+/* ALUR RESPONSIF: berlaku di layar ≤ 380px (ponsel layar kecil). Aturan di dalamnya MENIMPA gaya desktop di atas. */
+@media (max-width: 380px) {
+  .brand-name { font-size: 1.15rem; }
+  .header-actions { gap: 2px; }
+}
+/* Bentuk ikon panah dari file SVG (mask CSS). */
+.ikon-arrow { -webkit-mask-image: url(../assets/ikon/arrow.svg); mask-image: url(../assets/ikon/arrow.svg); }
+/* Bentuk ikon panah ke atas dari file SVG. */
+.ikon-up { -webkit-mask-image: url(../assets/ikon/up.svg); mask-image: url(../assets/ikon/up.svg); }
+/* Bentuk ikon peringatan dari file SVG. */
+.ikon-warn { -webkit-mask-image: url(../assets/ikon/warn.svg); mask-image: url(../assets/ikon/warn.svg); }
+
+/* ---------- gambar dari folder assets ---------- */
+/* Logo gambar tidak perlu latar merah. */
+img.brand-mark { background: transparent; }
+/* Banner gambar kategori: tinggi 200px, gambar dipotong cover, sudut membulat, bayangan lembut. */
+.cat-hero {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 4px 0 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+}
+/* Ilustrasi kotak status (offline/error/kosong) lebar 150px. */
+.state-ill {
+  width: 150px;
+  max-width: 70%;
+  height: auto;
+  border-radius: 12px;
+}
+/* Gambar besar halaman Tentang, tinggi maksimum 320px. */
+.about-hero {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin-bottom: 26px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .14);
+}
+/* ALUR RESPONSIF: berlaku di layar ≤ 640px (ponsel). Aturan di dalamnya MENIMPA gaya desktop di atas. */
+@media (max-width: 640px) {
+  .cat-hero { height: 140px; }
+  .about-hero { max-height: 200px; }
+}
+
+/* Daftar atribusi gambar Wikimedia di halaman Tentang. */
+.credit-list { list-style: none; margin-top: 12px; display: grid; gap: 6px; font-size: 13px; color: var(--text-soft); }
+/* Link lisensi warna merah. */
+.credit-list a { color: var(--brand); text-decoration: none; }
+/* Nama kategori di daftar kredit ditebalkan. */
+.credit-list .cr-cat { text-transform: capitalize; font-weight: 600; color: var(--text); }

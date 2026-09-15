@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<!-- BAGIAN <head>: metadata dokumen (charset, viewport, deskripsi SEO/Open Graph), favicon, dan tautan berkas CSS eksternal. -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inflasi, rupiah, pasar modal, UMKM, dan kebijakan fiskal.">
+  <meta name="theme-color" content="#c8102e">
+  <title>Berita Ekonomi Terbaru — NusaKini</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/favicon/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NusaKini">
+  <meta property="og:title" content="NusaKini — Portal Berita Indonesia">
+  <meta property="og:description" content="Portal berita Indonesia: nasional, ekonomi, teknologi, olahraga, dan lainnya.">
+  <meta property="og:image" content="../assets/meta/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<!-- Atribut data-page, data-kategori, dan data-base dibaca app.js untuk menentukan mode halaman serta awalan path aset dan tautan. -->
+<body data-page="kategori" data-kategori="ekonomi" data-base="../">
+
+  <!-- ====== SKIP LINK (aksesibilitas) ====== -->
+  <a class="skip-link" href="#konten-utama">Lewati ke konten utama</a>
+
+  <!-- ====== HEADER ====== -->
+  <header class="site-header" id="site-header">
+    <div class="header-top container">
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="site-nav">
+        <span class="burger" aria-hidden="true"></span>
+      </button>
+
+      <a class="brand" href="../index.html#/beranda">
+        <img class="brand-mark" src="../assets/logo/logo-mark.svg" alt="Logo NusaKini">
+        <span class="brand-text">
+          <span class="brand-name">NusaKini</span>
+          <span class="brand-tagline">Portal Berita Indonesia</span>
+        </span>
+      </a>
+
+      <div class="header-date" id="header-date">Memuat tanggal…</div>
+
+      <div class="header-actions">
+        <div class="search-trigger">
+          <button class="icon-btn" id="search-toggle" type="button" aria-label="Cari berita" aria-expanded="false" aria-controls="search-panel">
+            <span class="ico ikon-search" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Ganti mode gelap" aria-pressed="false">
+          <span class="ico ico-sun ikon-sun" aria-hidden="true"></span>
+          <span class="ico ico-moon ikon-moon" aria-hidden="true"></span>
+        </button>
+
+        <a class="icon-btn bookmark-btn" href="../index.html#/tersimpan" aria-label="Berita tersimpan">
+          <span class="ico ikon-bookmark" aria-hidden="true"></span>
+          <span class="badge" id="bookmark-count" hidden>0</span>
+        </a>
+
+        <button class="btn btn-ghost btn-user" id="auth-btn" type="button">
+          <span class="ico ikon-user" aria-hidden="true"></span>
+          <span class="auth-label" id="auth-label">Masuk</span>
+        </button>
+
+        <button class="btn btn-ghost btn-user btn-logout" id="logout-btn" type="button" aria-label="Keluar dari akun" title="Keluar dari akun" hidden>
+          <span class="ico ikon-logout" aria-hidden="true"></span>
+          <span class="auth-label">Keluar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== NAV KATEGORI ====== -->
+    <nav class="site-nav" id="site-nav" aria-label="Kategori berita">
+      <div class="nav-inner container" id="nav-list"></div>
+    </nav>
+
+    <!-- ====== PANEL PENCARIAN ====== -->
+    <div class="search-panel" id="search-panel" hidden>
+      <div class="container">
+        <form class="search-form" id="search-form" role="search" autocomplete="off">
+          <label class="visually-hidden" for="search-input">Kata kunci pencarian berita</label>
+          <input class="search-input" type="search" id="search-input" placeholder="Cari berita, topik, atau penulis… (contoh: inflasi)" aria-describedby="searchHint">
+          <button class="btn btn-primary" type="submit">Cari</button>
+          <button class="icon-btn" type="button" id="search-close" aria-label="Tutup pencarian">
+            <span class="ico ikon-close" aria-hidden="true"></span>
+          </button>
+        </form>
+        <p class="search-hint" id="search-hint">Tekan Enter untuk mencari. Hasil dicari dari judul, ringkasan, isi berita, dan kategori.</p>
+        <div class="search-suggest" id="search-suggest" aria-label="Pencarian populer"></div>
+      </div>
+    </div>
+  
+    <!-- ====== PANEL PENCARIAN ====== -->
+  </header>
+
+  <!-- ====== KONTEN UTAMA ====== -->
+  <!-- KONTEN UTAMA: seluruh section halaman berada dalam <main>; app.js menampilkan satu section sesuai rute dan menyembunyikan lainnya. -->
+  <main id="konten-utama" class="container" tabindex="-1">
+
+    <!-- ---------- DAFTAR BERITA KATEGORI EKONOMI ---------- -->
+    <section class="page page-category" id="page-category">
+      <div class="page-head">
+        <nav class="crumbs" id="cat-crumbs" aria-label="Jejak navigasi"></nav>
+        <h1 class="page-title" id="cat-title">Ekonomi</h1>
+        <p class="page-desc" id="cat-desc">Inflasi, rupiah, pasar modal, UMKM, dan kebijakan fiskal.</p>
+      </div>
+
+      <img class="cat-hero" src="../assets/kategori/ekonomi.jpg" alt="Ilustrasi kategori Ekonomi">
+      <div class="feed-tools" id="cat-tools"></div>
+      <div class="article-grid" id="cat-grid"></div>
+      <div class="feed-status" id="cat-status" aria-live="polite"></div>
+      <div class="sentinel" id="cat-sentinel" aria-hidden="true"></div>
+    </section>
+
+    <!-- ---------- AREA ERROR / GAGAL MUAT ---------- -->
+    <section class="page page-error" id="page-error" hidden>
+      <div class="state-box state-error" role="alert">
+        <div class="state-ico" aria-hidden="true">
+          <span class="ico ico-lg ikon-warn"></span>
+        </div>
+        <h1 class="state-title" id="error-title">Gagal memuat berita</h1>
+        <p class="state-text" id="error-text">Terjadi kesalahan.</p>
+        <ul class="error-detail" id="error-detail"></ul>
+        <div class="state-actions">
+          <button class="btn btn-primary" type="button" id="error-retry">Coba Lagi</button>
+          <a class="btn btn-ghost" href="../index.html#/beranda">Ke Beranda</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col footer-about">
+        <img class="brand-mark" src="../assets/logo/logo-mark.svg" alt="Logo NusaKini">
+        <h2 class="footer-brand">NusaKini</h2>
+        <p class="footer-text">NusaKini menyajikan kabar dari seluruh penjuru Indonesia dan mancanegara — akurat, ringan, dan nyaman dibaca kapan saja.</p>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-title">Kategori</h2>
+        <ul class="footer-list" id="footer-categories"></ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-title">Menu</h2>
+        <ul class="footer-list">
+          <li><a href="../index.html#/beranda">Beranda</a></li>
+          <li><a href="../index.html#/trending">Trending</a></li>
+          <li><a href="../index.html#/tersimpan">Berita Tersimpan</a></li>
+          <li><a href="../index.html#/cari">Pencarian</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-title">Tentang</h2>
+        <p class="footer-text">NusaKini menyajikan kabar dari seluruh penjuru Indonesia dan mancanegara — akurat, ringan, dan nyaman dibaca kapan saja.</p>
+        <ul class="footer-list">
+          <li><a href="../about.html">Tentang Portal</a></li>
+          <li><a href="../index.html#/trending">Papan Trending</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p id="footer-note">© <span id="footer-year">2026</span> NusaKini — All rights reserved.</p>
+        <p class="footer-src">NusaKini — kabar hari ini, dalam genggaman.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== TOMBOL KE ATAS ====== -->
+  <button class="to-top" id="to-top" type="button" aria-label="Kembali ke atas" hidden>
+    <span class="ico ikon-up" aria-hidden="true"></span>
+  </button>
+
+  <!-- ====== TOAST ====== -->
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ====== MODAL LOGIN ====== -->
+  <div class="modal" id="auth-modal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <button class="icon-btn modal-close" type="button" data-close aria-label="Tutup">
+        <span class="ico ikon-close" aria-hidden="true"></span>
+      </button>
+      <h2 class="modal-title" id="auth-title">Masuk ke NusaKini</h2>
+      <p class="modal-sub">Akun dipakai untuk menyimpan berita favoritmu — gratis, cepat, dan tersimpan di perangkatmu.</p>
+
+      <div class="tabs" role="tablist" aria-label="Pilih mode">
+        <button class="tab" type="button" role="tab" id="tab-login" aria-selected="true" aria-controls="auth-form">Masuk</button>
+        <button class="tab" type="button" role="tab" id="tab-register" aria-selected="false" aria-controls="auth-form">Daftar</button>
+      </div>
+
+      <form class="auth-form" id="auth-form">
+        <div class="field" id="name-field" hidden>
+          <label class="field-label" for="auth-name">Nama</label>
+          <input class="field-input" type="text" id="auth-name" placeholder="Nama kamu" autocomplete="name">
+        </div>
+        <div class="field" id="email-field" hidden>
+          <label class="field-label" for="auth-email">Email</label>
+          <input class="field-input" type="email" id="auth-email" placeholder="nama@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label class="field-label" for="auth-user">Username</label>
+          <input class="field-input" type="text" id="auth-user" placeholder="contoh: budi_santoso" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label class="field-label" for="auth-pass">Password</label>
+          <input class="field-input" type="password" id="auth-pass" placeholder="minimal 4 karakter" required minlength="4" autocomplete="current-password">
+        </div>
+        <p class="form-error" id="auth-error" role="alert" hidden></p>
+        <button class="btn btn-primary btn-block" type="submit" id="auth-submit">Masuk</button>
+        <button class="btn btn-ghost btn-block" type="button" id="guest-btn">Lanjut sebagai Tamu</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== MODAL KONFIRMASI (dipakai untuk keluar akun) ====== -->
+  <div class="modal" id="confirm-modal" hidden>
+    <div class="modal-backdrop" data-close-confirm></div>
+    <div class="modal-box modal-box-sm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirmText">
+      <div class="confirm-ico" id="confirm-ico" aria-hidden="true">
+        <span class="ico ico-lg ikon-logout"></span>
+      </div>
+      <h2 class="modal-title" id="confirm-title">Keluar dari akun?</h2>
+      <p class="modal-sub" id="confirm-text">Kamu perlu masuk lagi untuk melihat berita yang kamu simpan.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" type="button" id="confirm-cancel">Batal</button>
+        <button class="btn btn-primary btn-danger" type="button" id="confirm-ok">Ya, Keluar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Berkas JavaScript dimuat pada akhir dokumen agar seluruh elemen DOM telah tersedia saat dieksekusi. -->
+  <script src="../js/app.js"></script>
+</body>
+</html>
